@@ -16,7 +16,6 @@ const state = {
   accountArr: "All",
   accountPipeline: "All",
   accountSort: "Priority",
-  forecastMode: "revenue",
   selectedAccountKey: ""
 };
 
@@ -39,7 +38,6 @@ const selectors = {
   tierFilter: document.querySelector("#tier-filter"),
   segmentFilter: document.querySelector("#segment-filter"),
   accountScopeFilter: document.querySelector("#account-scope-filter"),
-  forecastModeFilter: document.querySelector("#forecast-mode-filter"),
   searchFilter: document.querySelector("#search-filter"),
   filterChips: document.querySelector("#filter-chips"),
   resetFilters: document.querySelector("#reset-filters"),
@@ -51,10 +49,6 @@ const selectors = {
   segmentGrid: document.querySelector("#segment-grid"),
   mustWinStatus: document.querySelector("#must-win-status"),
   accountInsights: document.querySelector("#account-insights"),
-  forecastReviewPanel: document.querySelector("#forecast-review-panel"),
-  april20UpsideList: document.querySelector("#april20-upside-list"),
-  april22UpsideList: document.querySelector("#april22-upside-list"),
-  icarrWatchList: document.querySelector("#icarr-watch-list"),
   accountSegmentFilter: document.querySelector("#account-segment-filter"),
   accountClassificationFilter: document.querySelector("#account-classification-filter"),
   accountVerticalFilter: document.querySelector("#account-vertical-filter"),
@@ -65,8 +59,6 @@ const selectors = {
   accountTable: document.querySelector("#account-table"),
   accountCount: document.querySelector("#account-count")
 };
-
-const OLD_ICARR_ACCOUNT_NAMES = new Set(["GetYourGuide Deutschland GmbH"]);
 
 const money = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -337,28 +329,6 @@ function accountKey(item) {
   return `${item.source}::${item.rank}::${item.name}`;
 }
 
-function hasOldIcarrPricing(account) {
-  return OLD_ICARR_ACCOUNT_NAMES.has(account.name) || String(account.quarter || "").toLowerCase().includes("icarr");
-}
-
-function revenueFirstScore(account) {
-  return Number(account.pipeline || 0);
-}
-
-function forecastFocus(account) {
-  const wedge = String(account.productWedge || "").toLowerCase();
-  const quarter = String(account.quarter || "").toLowerCase();
-  if (quarter.includes("consumption") || wedge.includes("api")) return "API consumption";
-  if (Number(account.pipeline || 0) > 0 && Number(account.arr || 0) > 0) return "Expansion revenue";
-  if (Number(account.pipeline || 0) > 0) return "New revenue pipeline";
-  if (Number(account.arr || 0) > 0) return "Existing ARR base";
-  return "No loaded revenue signal";
-}
-
-function pricingFlag(account) {
-  return hasOldIcarrPricing(account) ? "iCARR old pricing assumption" : "Current revenue basis";
-}
-
 function passesMoneyFilter(value, filter, kind) {
   if (filter === "All") return true;
   const loaded = isLoaded(value);
@@ -398,10 +368,6 @@ function populateFilters() {
     state.accountScope = selectors.accountScopeFilter.value;
     state.selectedAccountKey = "";
     resetAccountFilters();
-    render();
-  });
-  selectors.forecastModeFilter.addEventListener("change", () => {
-    state.forecastMode = selectors.forecastModeFilter.value;
     render();
   });
   selectors.searchFilter.addEventListener("input", () => {
@@ -471,7 +437,6 @@ function resetFilters() {
   state.tier = "All";
   state.segment = "All";
   state.accountScope = "Top 100 Must-Win";
-  state.forecastMode = "revenue";
   state.search = "";
   resetAccountFilters();
   state.selectedAccountKey = "";
@@ -481,7 +446,6 @@ function resetFilters() {
   selectors.tierFilter.value = state.tier;
   selectors.segmentFilter.value = state.segment;
   selectors.accountScopeFilter.value = state.accountScope;
-  selectors.forecastModeFilter.value = state.forecastMode;
   selectors.searchFilter.value = state.search;
 
   render();
@@ -545,18 +509,6 @@ function renderHeroNarrative() {
   const tam = data.summary.totalAccounts;
   const penetration = current.customers / tam;
   const arrYoyPct = overallGrowth(current.arr, yoy.arr);
-  const mustWinSummary = mustWinCurrentSummary();
-  const mustWinCustomers = Number(mustWinSummary.loadedArrAccounts || 0);
-  const mustWinScope = Number(mustWinSummary.accountsInScope || 0);
-  const mustWinPenetration = mustWinScope ? (mustWinCustomers / mustWinScope) * 100 : 0;
-
-  if (state.forecastMode === "revenue") {
-    selectors.heroTitle.textContent = `Revenue-first forecast view: ${roundMillions(current.revenue)} Q1 consumption revenue, ${roundMillions(current.arr)} ARR, and ${roundMillions(mustWinSummary.openPipelineUsd)} Top 100 pipeline.`;
-    selectors.heroLead.textContent = `Lead the reviews with consumption and revenue: where ARR is already real, where API consumption pipeline can move, and where iCARR is still carrying old-pricing assumptions before the number is trusted.`;
-    selectors.heroSignalCopy.textContent = `April 20 should focus immediate pipeline calls; April 22 should pressure-test the next upside layer. iCARR flags stay visible so pricing assumptions do not get mistaken for durable forecast.`;
-    selectors.heroMustWinCopy.textContent = `Top 100 snapshot: ${roundMillions(mustWinSummary.currentArrUsd)} ARR, ${roundMillions(mustWinSummary.openPipelineUsd)} open pipeline, ${formatDecimal(mustWinCustomers)} loaded revenue accounts.`;
-    return;
-  }
 
   selectors.heroTitle.textContent = `EMEA Enterprise, Mid Market and Digital Natives grew ARR ${formatPercentWhole(arrYoyPct)} YoY in Q1 FY26, but remain lightly penetrated at ${formatPercentWhole(penetration * 100)}.`;
   selectors.heroLead.textContent = `The market is still only ${formatPercentWhole(penetration * 100)} penetrated with ${formatDecimal(current.customers)} customers across ${formatDecimal(tam)} total accounts. The opportunity is to expand coverage and accelerate growth with a stronger AD footprint and a more focused regional operating model.`;
@@ -632,37 +584,7 @@ function renderMetrics() {
   const tam = data.summary.totalAccounts;
   const customers = current.customers;
   const penetration = customers / tam;
-  const arrYoyUsd = current.arr - yoy.arr;
-
-  const revenueMetrics = [
-    {
-      label: "Consumption Revenue",
-      value: roundMillions(current.revenue),
-      note: `Q1 FY26 revenue · YoY ${formatGrowth(overallGrowth(current.revenue, yoy.revenue))} · QoQ ${formatGrowth(overallGrowth(current.revenue, qoq.revenue))}`
-    },
-    {
-      label: "ARR",
-      value: roundMillions(current.arr),
-      note: `QoQ ${formatGrowth(overallGrowth(current.arr, qoq.arr))} · YoY ${formatGrowth(overallGrowth(current.arr, yoy.arr))}`
-    },
-    {
-      label: "Top 100 Pipeline",
-      value: roundMillions(data.mustWin?.summary?.openPipelineUsd || 0),
-      note: "Open pipeline in the refreshed embedded Must Win source"
-    },
-    {
-      label: "iCARR Watch",
-      value: formatDecimal(top100MustWinAccounts().filter(hasOldIcarrPricing).length),
-      note: "Accounts still flagged for old-pricing validation"
-    },
-    {
-      label: "Review Upside",
-      value: roundMillions(reviewAccounts(top100MustWinAccounts(), "april20").reduce((sum, item) => sum + revenueFirstScore(item), 0)),
-      note: "April 20 immediate call list"
-    }
-  ];
-
-  const metrics = state.forecastMode === "revenue" ? revenueMetrics : [
+  const metrics = [
     {
       label: "ARR",
       value: roundMillions(current.arr),
@@ -964,8 +886,7 @@ function renderMustWinStatus(accounts) {
       : state.accountScope === "All Customers"
         ? "All customers in the current portfolio view"
         : "All accounts in the current portfolio view";
-  const oldIcarrCount = accounts.filter(hasOldIcarrPricing).length;
-  selectors.mustWinStatus.textContent = `${scopeLabel} · ${formatDecimal(accounts.length)} accounts in view across Enterprise, Mid-Market, and Digital Natives · ${formatDecimal(arrLoaded)} customer accounts with ARR loaded · ${formatDecimal(pipelineLoaded)} accounts with pipeline loaded · ${formatDecimal(countries)} countries represented · ${formatDecimal(flagged)} accounts flagged from source-sheet notes or April 16 changes · ${formatDecimal(oldIcarrCount)} iCARR old-pricing flags · source generated ${shortDate(mustWin.sourceGeneratedAt || mustWin.generatedAt)}.`;
+  selectors.mustWinStatus.textContent = `${scopeLabel} · ${formatDecimal(accounts.length)} accounts in view across Enterprise, Mid-Market, and Digital Natives · ${formatDecimal(arrLoaded)} customer accounts with ARR loaded · ${formatDecimal(pipelineLoaded)} accounts with pipeline loaded · ${formatDecimal(countries)} countries represented · ${formatDecimal(flagged)} accounts flagged from source-sheet notes or April 16 changes · source generated ${shortDate(mustWin.sourceGeneratedAt || mustWin.generatedAt)}.`;
 }
 
 function selectedOrFirstAccount(items) {
@@ -978,10 +899,8 @@ function selectedOrFirstAccount(items) {
 
 function sortAccounts(items) {
   return [...items].sort((a, b) => {
-    if (state.forecastMode === "revenue" && state.accountSort === "Priority") return revenueFirstScore(b) - revenueFirstScore(a) || Number(b.arr || 0) - Number(a.arr || 0);
     if (state.accountSort === "ARR") return Number(b.arr || -1) - Number(a.arr || -1);
     if (state.accountSort === "Pipeline") return Number(b.pipeline || -1) - Number(a.pipeline || -1);
-    if (state.accountSort === "Revenue") return Number(b.revenueB || -1) - Number(a.revenueB || -1);
     if (state.accountSort === "Name") return a.name.localeCompare(b.name);
     if (a.sortGroup !== b.sortGroup) return a.sortGroup - b.sortGroup;
     return (a.rank || 999) - (b.rank || 999);
@@ -1011,8 +930,6 @@ function renderAccountDetail(account) {
     <dl>
       <div><dt>ARR</dt><dd>${formatOptionalMoney(account.arr)}</dd></div>
       <div><dt>Pipeline</dt><dd>${formatOptionalMoney(account.pipeline)}</dd></div>
-      <div><dt>Forecast focus</dt><dd>${forecastFocus(account)}</dd></div>
-      <div><dt>Pricing flag</dt><dd>${pricingFlag(account)}</dd></div>
       <div><dt>Owner</dt><dd>${account.owner}</dd></div>
       <div><dt>Exec Sponsor</dt><dd>${account.execSponsor || "Not loaded"}</dd></div>
       <div><dt>Quarter</dt><dd>${account.quarter || "Not loaded"}</dd></div>
@@ -1045,14 +962,6 @@ function renderAccounts(items) {
         : "All accounts";
 
   selectors.accountCount.textContent = `${sorted.length} accounts`;
-  const revenueInsights = [
-    { label: "Revenue / Consumption", value: formatMoney(totalArr + totalPipeline), note: "Current ARR plus loaded open pipeline" },
-    { label: "Open pipeline", value: formatMoney(totalPipeline), note: `${formatDecimal(loadedPipeline.length)} accounts with pipeline loaded` },
-    { label: "ARR base", value: formatMoney(totalArr), note: `${formatDecimal(loadedArr.length)} accounts with ARR loaded in ${scopeNote.toLowerCase()}` },
-    { label: "April 20 upside", value: formatMoney(reviewAccounts(sorted, "april20").reduce((sum, item) => sum + revenueFirstScore(item), 0)), note: "Immediate review accounts in this filtered view" },
-    { label: "April 22 upside", value: formatMoney(reviewAccounts(sorted, "april22").reduce((sum, item) => sum + revenueFirstScore(item), 0)), note: "Next-layer upside accounts in this filtered view" },
-    { label: "iCARR watch", value: formatDecimal(sorted.filter(hasOldIcarrPricing).length), note: "Old pricing assumptions to call out explicitly" }
-  ];
   const operatingInsights = [
     { label: "ARR", value: formatMoney(totalArr), note: `${formatDecimal(loadedArr.length)} accounts with ARR loaded in ${scopeNote.toLowerCase()}` },
     { label: "Growth", value: arrGrowthValue, note: arrGrowthValue === "n/a" ? "ARR growth is not populated in the current Must Win snapshot" : `${arrGrowthLabel} from the Must Win snapshot` },
@@ -1061,7 +970,7 @@ function renderAccounts(items) {
     { label: "Customers > $1M", value: formatDecimal(customersOver1m), note: "customers over $1M ARR" },
     { label: "Open pipeline", value: formatMoney(totalPipeline), note: `${formatDecimal(loadedPipeline.length)} accounts with pipeline loaded` }
   ];
-  selectors.accountInsights.innerHTML = (state.forecastMode === "revenue" ? revenueInsights : operatingInsights).map((item) => `
+  selectors.accountInsights.innerHTML = operatingInsights.map((item) => `
     <article class="account-insight">
       <span>${item.label}</span>
       <strong>${item.value}</strong>
@@ -1070,7 +979,6 @@ function renderAccounts(items) {
   `).join("");
 
   renderMustWinStatus(sorted);
-  renderForecastReview(sorted);
   renderAccountDetail(selectedAccount);
 
   selectors.accountTable.innerHTML = sorted.map((item) => `
@@ -1086,12 +994,10 @@ function renderAccounts(items) {
       <td>${item.vertical}</td>
       <td>${formatOptionalMoney(item.arr)}</td>
       <td>${formatOptionalMoney(item.pipeline)}</td>
-      <td>${forecastFocus(item)}</td>
-      <td><span class="account-pill ${hasOldIcarrPricing(item) ? "account-pill--warn" : ""}">${pricingFlag(item)}</span></td>
       <td>${item.owner}</td>
       <td>${item.quarter || "Not loaded"}</td>
     </tr>
-  `).join("") || `<tr><td colspan="11"><strong>No matching accounts</strong><small>Loosen the account filters or clear the global search.</small></td></tr>`;
+  `).join("") || `<tr><td colspan="9"><strong>No matching accounts</strong><small>Loosen the account filters or clear the global search.</small></td></tr>`;
 
   selectors.accountTable.querySelectorAll("tr[data-account-key]").forEach((row) => {
     row.addEventListener("click", () => {
@@ -1101,46 +1007,6 @@ function renderAccounts(items) {
   });
 }
 
-function isNearTermReview(account) {
-  const quarter = String(account.quarter || "").toLowerCase();
-  return quarter.includes("2026-04") || quarter.includes("2026-05") || quarter.includes("fy26-q2") || quarter.includes("2026-q2");
-}
-
-function reviewAccounts(accounts, review) {
-  const candidates = accounts
-    .filter((item) => revenueFirstScore(item) > 0)
-    .sort((a, b) => revenueFirstScore(b) - revenueFirstScore(a) || Number(b.arr || 0) - Number(a.arr || 0));
-  if (review === "april20") {
-    return candidates.filter((item) => isNearTermReview(item) || hasOldIcarrPricing(item)).slice(0, 5);
-  }
-  const april20Keys = new Set(reviewAccounts(accounts, "april20").map(accountKey));
-  return candidates.filter((item) => !april20Keys.has(accountKey(item))).slice(0, 5);
-}
-
-function renderForecastAccountList(target, accounts) {
-  target.innerHTML = accounts.length
-    ? accounts.map((account) => `
-      <div class="forecast-account">
-        <div>
-          <strong>${account.name}</strong>
-          <span>${account.owner} · ${account.quarter || "Not loaded"}</span>
-        </div>
-        <b>${formatOptionalMoney(account.pipeline)}</b>
-        <p>${forecastFocus(account)}${hasOldIcarrPricing(account) ? " · iCARR old pricing assumption" : ""}</p>
-      </div>
-    `).join("")
-    : `<p>No loaded upside accounts match the current filters.</p>`;
-}
-
-function renderForecastReview(accounts) {
-  const isRevenueMode = state.forecastMode === "revenue";
-  selectors.forecastReviewPanel.hidden = !isRevenueMode;
-  if (!isRevenueMode) return;
-  renderForecastAccountList(selectors.april20UpsideList, reviewAccounts(accounts, "april20"));
-  renderForecastAccountList(selectors.april22UpsideList, reviewAccounts(accounts, "april22"));
-  renderForecastAccountList(selectors.icarrWatchList, accounts.filter(hasOldIcarrPricing));
-}
-
 function renderFilterChips() {
   const chips = [
     ["Geo", state.geo],
@@ -1148,7 +1014,6 @@ function renderFilterChips() {
     ["Tier", state.tier],
     ["Segment", state.segment],
     ["Account scope", state.accountScope],
-    ["Forecast mode", state.forecastMode === "revenue" ? "Revenue-first forecast" : "Operating view"],
     ["Search", state.search],
     ["Account segment", state.accountSegment],
     ["Classification", state.accountClassification],

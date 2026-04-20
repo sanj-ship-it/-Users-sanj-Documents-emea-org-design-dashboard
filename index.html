@@ -212,13 +212,6 @@
             <option value="All Accounts">All accounts</option>
           </select>
         </label>
-        <label>
-          Forecast mode
-          <select id="forecast-mode-filter">
-            <option value="revenue">Revenue-first forecast</option>
-            <option value="operating">Operating view</option>
-          </select>
-        </label>
         <label class="filters__search">
           Search
           <input id="search-filter" type="search" placeholder="Territory, account, owner, industry">
@@ -329,31 +322,6 @@
           </section>
         </div>
       </div>
-      <div class="forecast-review-panel" id="forecast-review-panel">
-        <div class="account-controls-heading">
-          <div>
-            <p class="eyebrow">Revenue-First Forecast Mode</p>
-            <h3>Talk track for April 20 and April 22 forecast reviews.</h3>
-          </div>
-        </div>
-        <div class="forecast-review-grid">
-          <article>
-            <span>April 20</span>
-            <strong>Immediate revenue and consumption calls</strong>
-            <div class="forecast-account-list" id="april20-upside-list"></div>
-          </article>
-          <article>
-            <span>April 22</span>
-            <strong>Upside accounts to pressure test</strong>
-            <div class="forecast-account-list" id="april22-upside-list"></div>
-          </article>
-          <article>
-            <span>Pricing Assumption Watch</span>
-            <strong>iCARR still on old pricing assumptions</strong>
-            <div class="forecast-account-list" id="icarr-watch-list"></div>
-          </article>
-        </div>
-      </div>
       <div class="must-win-status">
         <div>
           <p class="eyebrow">Must-Win Narrative</p>
@@ -396,7 +364,6 @@
               <option value="Priority">Priority</option>
               <option value="ARR">ARR high to low</option>
               <option value="Pipeline">Pipeline high to low</option>
-              <option value="Revenue">Revenue high to low</option>
               <option value="Name">Name A-Z</option>
             </select>
           </label>
@@ -425,8 +392,6 @@
                     <th>Vertical</th>
                     <th>ARR</th>
                     <th>Pipeline</th>
-                    <th>Forecast focus</th>
-                    <th>Pricing flag</th>
                     <th>Owner</th>
                     <th>Quarter</th>
                   </tr>
