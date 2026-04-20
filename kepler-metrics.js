@@ -1,0 +1,70 @@
+window.keplerMetrics = {
+  sourceDashboard: "https://kepler.gateway.data-1.internal.api.openai.org/dashboards/4d9701b4-3054-40a4-bb4a-f764fd22bdec?tab=d3223eb7-55bd-46c0-8b48-733f9bd936b3",
+  generatedAt: "2026-04-19",
+  asOfQuarter: "Q1 2026",
+  snapshotDate: "2026-03-31",
+  scope: "EMEA Enterprise, Mid-Market, and Digital Natives only",
+  overallPeriods: [
+    { period: "Q1 2025", revenue: 19888763.29, bookings: 24004464.22, arr: 91204558.04, customers: 317, customersOver1m: 18 },
+    { period: "Q2 2025", revenue: 29326198.05, bookings: 30273885.5, arr: 138791866.2, customers: 419, customersOver1m: 25 },
+    { period: "Q3 2025", revenue: 42223802.59, bookings: 31352412.63, arr: 193234943.92, customers: 567, customersOver1m: 36 },
+    { period: "Q4 2025", revenue: 63752495.42, bookings: 84403967.66, arr: 241246599.05, customers: 755, customersOver1m: 48 },
+    { period: "Q1 2026", revenue: 76319094.58, bookings: 86033620.96, arr: 353631948.12, customers: 887, customersOver1m: 63 }
+  ],
+  segments: [
+    {
+      segment: "Digital Natives",
+      revenue: 35698341.05,
+      revenueYoyPct: 266.9,
+      revenueQoqPct: 6.2,
+      bookings: 29867207.6,
+      bookingsYoyPct: 252.7,
+      bookingsQoqPct: 36.7,
+      arr: 168556709.08,
+      arrYoyPct: 275.3,
+      arrQoqPct: 52.9,
+      customers: 269,
+      customersYoyPct: 186.2,
+      customersQoqPct: 22.3,
+      customersOver1m: 30,
+      customersOver1mYoyPct: 275.0,
+      customersOver1mQoqPct: 25.0
+    },
+    {
+      segment: "Enterprise",
+      revenue: 24344071.15,
+      revenueYoyPct: 399.4,
+      revenueQoqPct: 38.7,
+      bookings: 47050691.19,
+      bookingsYoyPct: 322.5,
+      bookingsQoqPct: -3.4,
+      arr: 112628878.74,
+      arrYoyPct: 410.1,
+      arrQoqPct: 45.8,
+      customers: 213,
+      customersYoyPct: 108.8,
+      customersQoqPct: 12.1,
+      customersOver1m: 22,
+      customersOver1mYoyPct: 340.0,
+      customersOver1mQoqPct: 29.4
+    },
+    {
+      segment: "Mid-Market",
+      revenue: 16276682.37,
+      revenueYoyPct: 208.0,
+      revenueQoqPct: 29.3,
+      bookings: 9115722.18,
+      bookingsYoyPct: 107.1,
+      bookingsQoqPct: -34.2,
+      arr: 72446360.29,
+      arrYoyPct: 199.3,
+      arrQoqPct: 34.8,
+      customers: 405,
+      customersYoyPct: 234.7,
+      customersQoqPct: 17.4,
+      customersOver1m: 11,
+      customersOver1mYoyPct: 120.0,
+      customersOver1mQoqPct: 57.1
+    }
+  ]
+};
