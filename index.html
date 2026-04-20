@@ -11,17 +11,27 @@
 </head>
 <body>
   <header class="masthead">
-    <div class="masthead__image">
-      <img src="https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=1200&q=80" alt="European city grid from above">
-    </div>
     <div class="masthead__content">
-      <p class="eyebrow">20260323 EMEA Org Design Analysis FY26</p>
-      <h1>A market-led EMEA org, anchored in the countries that matter most.</h1>
-      <p class="lead">The plan lifts TAM coverage from 54.0% to 71.8%, adds focus around 1,502 whitespace accounts, and concentrates leadership attention in UKI, Germany, and France.</p>
+      <p class="eyebrow">FY26 EMEA Growth Plan</p>
+      <h1 id="hero-title">Lightly penetrated market. Clear path to 110 ADs.</h1>
+      <p class="lead" id="hero-lead">The case for FY26 is simple: ARR is growing, penetration is still low versus TAM, AD coverage is too light for the size of the market, and a regional-first model gives us a cleaner way to focus Germany, the UK, France, and the highest-priority must-win accounts with a path to roughly 110 ADs.</p>
+      <div class="masthead__signal">
+        <div>
+          <span class="eyebrow">What matters</span>
+          <p id="hero-signal-copy">Grow ARR by increasing customer penetration, expanding AD coverage, and focusing the field on the countries and accounts that can carry the biggest outcome.</p>
+          <p class="masthead__subnote" id="hero-mustwin-copy"></p>
+        </div>
+        <div class="masthead__signal-list">
+          <span>TAM is large</span>
+          <span>Penetration is still low</span>
+          <span>Coverage must scale</span>
+        </div>
+      </div>
+      <div class="goal-grid" id="goal-grid"></div>
       <div class="masthead__actions">
         <a class="button button--primary" href="#narrative">Read the exec summary</a>
-        <a class="button button--primary" href="#market-map">Review the market map</a>
-        <a class="button button--primary" href="#accounts">See key accounts</a>
+        <a class="button button--primary" href="#org-design">Review organisational design</a>
+        <a class="button button--primary" href="#accounts">See Top 100 accounts</a>
       </div>
     </div>
   </header>
@@ -30,24 +40,29 @@
     <section class="band band--narrative" id="narrative">
       <div class="narrative-hero">
         <p class="eyebrow">Exec Summary</p>
-        <h2>Move EMEA from broad geographic coverage to a market-led operating model.</h2>
-        <p>The recommendation is to anchor FY26 coverage in Tier 1 markets, add 111 recommended ADs across the planning model, and focus leadership inspection on the accounts and countries with the highest whitespace.</p>
+        <h2>Grow ARR by improving penetration, increasing coverage, and focusing the field where it matters most.</h2>
+        <p>EMEA has a large addressable market, low customer penetration, and an AD footprint that is too light for the size of the opportunity. The FY26 move is to scale coverage, run the field through practical sub-regions, and focus leadership attention on Tier 1 countries, priority verticals, and the Top 100 portfolio.</p>
       </div>
-      <div class="narrative-grid">
+      <div class="narrative-grid narrative-grid--summary">
         <article class="narrative-card">
           <span>01</span>
-          <h3>Put the most complete teams around UKI, Germany, and France.</h3>
-          <p>These are the Tier 1 win markets and the largest coverage gaps. They should drive manager placement, AD hiring, specialist coverage, and account-level inspection.</p>
+          <h3>ARR is growing, but penetration is still light.</h3>
+          <p>We have meaningful momentum in Enterprise, Mid-Market, and Digital Natives, but the current customer base still covers only a small share of total EMEA accounts.</p>
         </article>
         <article class="narrative-card">
           <span>02</span>
-          <h3>Use hubs and regional coverage where density is thinner.</h3>
-          <p>Tier 2 and Tier 3 markets still get explicit coverage motions, but the org should avoid turning every country / segment cut into a bespoke patch.</p>
+          <h3>The opportunity is in whitespace.</h3>
+          <p>The gap between TAM and current customers is what creates the growth case. We should treat whitespace as a coverage and focus problem, not just a pipeline problem.</p>
         </article>
         <article class="narrative-card">
           <span>03</span>
-          <h3>Tie org-design choices to must-win execution.</h3>
-          <p>The account filter combines the market-planning list with the must-win command deck so each region and segment view ends in concrete accounts, owners, ARR, and pipeline.</p>
+          <h3>Coverage needs to move from 53 ADs to 110 ADs.</h3>
+          <p>That step-change lowers account load, improves customer coverage, and gives the field a more realistic path to expanding ARR across the highest-value countries and segments.</p>
+        </article>
+        <article class="narrative-card">
+          <span>04</span>
+          <h3>Focus follows a regional-first and country-tiered model.</h3>
+          <p>Run the field through sub-regions, anchor execution in Germany, the UK, and France, concentrate on priority verticals, and use the Top 100 book as the sharp edge of execution.</p>
         </article>
       </div>
     </section>
@@ -55,82 +70,95 @@
     <section class="band band--overview" id="overview">
       <div class="section-heading">
         <p class="eyebrow">Key Data Points</p>
-        <h2>Coverage, whitespace, headcount, and book size.</h2>
+        <h2>Low penetration today. Clear headroom to grow ARR, customers, and coverage.</h2>
+        <p class="section-note">These cards combine the planning model with the Kepler Q1 2026 readout for Enterprise, Mid-Market, and Digital Natives only. The key idea is simple: TAM is large, penetration is low, and the AD model needs to scale.</p>
       </div>
       <div class="metrics" id="metrics"></div>
+      <div class="segment-summary" id="segment-summary"></div>
     </section>
 
     <section class="band band--market-map" id="market-map">
       <div class="section-heading section-heading--row">
         <div>
           <p class="eyebrow">Market Tiering</p>
-          <h2>Prioritize markets by intent, coverage motion, and location.</h2>
+          <h2>A Regional First and Country Tiering Approach will help us focus.</h2>
         </div>
-        <a class="text-link" href="#territories">See territory math</a>
+        <a class="text-link" href="#territories">See sub-region detail</a>
       </div>
       <div class="tier-grid" aria-label="EMEA market prioritization tiers">
         <article class="tier-card tier-card--primary">
           <div>
-            <p class="eyebrow">Tier 1 / 60-70% investment</p>
-            <h3>Win the Market</h3>
+            <p class="eyebrow">Tier 1</p>
+            <h3>Win the market</h3>
           </div>
           <p>United Kingdom, Germany, France</p>
           <dl>
-            <div><dt>Coverage</dt><dd>Country specific</dd></div>
-            <div><dt>Motion</dt><dd>Vertical plus land / expand</dd></div>
-            <div><dt>Location</dt><dd>In-country or from hub</dd></div>
+            <div><dt>Coverage</dt><dd>Country-first and manager-attended</dd></div>
+            <div><dt>Motion</dt><dd>Vertical plus expansion</dd></div>
+            <div><dt>Priority</dt><dd>Most AD capacity, inspection, and must-win pressure</dd></div>
           </dl>
         </article>
         <article class="tier-card">
           <div>
-            <p class="eyebrow">Tier 2 / 20-30% investment</p>
-            <h3>Grow the Market</h3>
+            <p class="eyebrow">Tier 2</p>
+            <h3>Grow the market</h3>
           </div>
-          <p>Sweden, Switzerland, Netherlands / Benelux, Spain, UAE</p>
+          <p>Sweden, Switzerland, Benelux, Spain, UAE</p>
           <dl>
-            <div><dt>Coverage</dt><dd>Country / region specific</dd></div>
-            <div><dt>Motion</dt><dd>Land / expand or lifecycle</dd></div>
-            <div><dt>GTM</dt><dd>Direct sales</dd></div>
+            <div><dt>Coverage</dt><dd>Country or cluster-specific</dd></div>
+            <div><dt>Motion</dt><dd>Land, expand, and repeatable execution</dd></div>
+            <div><dt>Priority</dt><dd>Selective vertical focus where density already exists</dd></div>
           </dl>
         </article>
         <article class="tier-card">
           <div>
-            <p class="eyebrow">Tier 3 / 10-15% investment</p>
-            <h3>Seed the Market</h3>
+            <p class="eyebrow">Tier 3</p>
+            <h3>Seed the market</h3>
           </div>
-          <p>Poland, Italy, Ireland, Austria, Israel, Denmark / Norway, Belgium, Saudi Arabia</p>
+          <p>Italy, Poland, Israel, Nordics edge markets, Saudi Arabia / Qatar</p>
           <dl>
-            <div><dt>Coverage</dt><dd>Region specific</dd></div>
-            <div><dt>Motion</dt><dd>Lifecycle</dd></div>
-            <div><dt>GTM</dt><dd>Direct / resell</dd></div>
+            <div><dt>Coverage</dt><dd>Regional support with targeted bets</dd></div>
+            <div><dt>Motion</dt><dd>Lifecycle plus account-led selection</dd></div>
+            <div><dt>Priority</dt><dd>Expand where ARR or customer density proves out</dd></div>
           </dl>
         </article>
         <article class="tier-card">
           <div>
-            <p class="eyebrow">Tier 4 / 0-5% investment</p>
+            <p class="eyebrow">Tier 4</p>
             <h3>Cover from hub</h3>
           </div>
-          <p>Rest of Central / Eastern Europe, Rest of the Middle East, Africa</p>
+          <p>Rest of Central, Rest of South, Rest of MEA</p>
           <dl>
-            <div><dt>Coverage</dt><dd>Regional lifecycle</dd></div>
-            <div><dt>Location</dt><dd>From hub</dd></div>
-            <div><dt>GTM</dt><dd>Direct / resell</dd></div>
+            <div><dt>Coverage</dt><dd>Hub-led and regional</dd></div>
+            <div><dt>Motion</dt><dd>Maintain coverage without over-fragmenting the org</dd></div>
+            <div><dt>Priority</dt><dd>Protect efficiency and keep optionality</dd></div>
           </dl>
         </article>
       </div>
-      <div class="region-grid" aria-label="Regional planning groupings from the territory map">
-        <article>
-          <span>UKI / North</span>
-          <p>UKI, Nordics, Benelux, Israel</p>
-        </article>
-        <article>
-          <span>DACH & Central</span>
-          <p>Germany, Switzerland, Austria, Poland, Central / Eastern Europe</p>
-        </article>
-        <article>
-          <span>France & South</span>
-          <p>France, Spain, Italy, UAE, Saudi Arabia, Middle East and Africa</p>
-        </article>
+      <div class="subregion-panel">
+        <div class="section-heading section-heading--row section-heading--compact">
+          <div>
+            <p class="eyebrow">Sub Regions</p>
+            <h3>Moving to a Sub Regional Model</h3>
+          </div>
+        </div>
+        <div class="subregion-grid">
+          <article class="subregion-card">
+            <span>UKI / North</span>
+            <strong>UKI, Nordics, Benelux, Israel</strong>
+            <p>Best suited for dense Digital Natives and Enterprise inspection, with UKI as the anchor market.</p>
+          </article>
+          <article class="subregion-card">
+            <span>DACH & Central</span>
+            <strong>Germany, Switzerland, Austria, Poland, Central Europe</strong>
+            <p>Germany is the anchor; the rest of the sub-region should be run through capacity and specialization discipline.</p>
+          </article>
+          <article class="subregion-card">
+            <span>France & South</span>
+            <strong>France, Spain, Italy, UAE, Middle East and Africa</strong>
+            <p>France carries the Tier 1 weight, while the rest of the patch needs tighter hub-led execution.</p>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -138,14 +166,24 @@
       <div class="question-strip" aria-label="Organisational design choices from the org-design memo">
         <div>
           <p class="eyebrow">Organisational Design</p>
-          <h3>Market-first for priority countries. Geo-led where specialization is not yet dense enough.</h3>
+          <h3>Scale the AD model so the field can cover the market with a much more realistic load.</h3>
         </div>
-        <ul>
-          <li>Verticalize Large Enterprise / Enterprise first; keep Digital Natives and Mid-Market closer to the geo motion.</li>
-          <li>Use UKI / North, DACH & Central, and France & South as practical leadership groupings.</li>
-          <li>Close manager mapping, remote hiring, TS / XFN investment, partnerships, and field-announcement decisions before rollout.</li>
-        </ul>
+        <div class="org-principles">
+          <article class="org-principle">
+            <span>Coverage</span>
+            <p>Scale from today’s footprint to the target 110-AD model so the field can actually inspect and expand the market.</p>
+          </article>
+          <article class="org-principle">
+            <span>Load</span>
+            <p>Reduce accounts and customers per AD so the book becomes more actionable, not just more distributed.</p>
+          </article>
+          <article class="org-principle">
+            <span>Economics</span>
+            <p>Rebalance ARR per AD so each patch has room to grow while staying grounded in practical inspection and execution.</p>
+          </article>
+        </div>
       </div>
+      <div class="org-summary" id="org-summary"></div>
     </section>
 
     <section class="band band--filters" aria-label="Dashboard filters">
@@ -155,6 +193,10 @@
           <select id="geo-filter"></select>
         </label>
         <label>
+          Country
+          <select id="country-filter"></select>
+        </label>
+        <label>
           Tier
           <select id="tier-filter"></select>
         </label>
@@ -162,33 +204,52 @@
           Segment
           <select id="segment-filter"></select>
         </label>
+        <label>
+          Account scope
+          <select id="account-scope-filter">
+            <option value="Top 100 Must-Win">Top 100 Must Win</option>
+            <option value="All Customers">All customers</option>
+            <option value="All Accounts">All accounts</option>
+          </select>
+        </label>
+        <label>
+          Forecast mode
+          <select id="forecast-mode-filter">
+            <option value="revenue">Revenue-first forecast</option>
+            <option value="operating">Operating view</option>
+          </select>
+        </label>
         <label class="filters__search">
           Search
           <input id="search-filter" type="search" placeholder="Territory, account, owner, industry">
         </label>
+      </div>
+      <div class="filter-summary">
+        <div class="filter-chips" id="filter-chips"></div>
+        <button class="button button--reset" id="reset-filters" type="button">Reset filters</button>
       </div>
     </section>
 
     <section class="band" id="territories">
       <div class="section-heading section-heading--row">
         <div>
-          <p class="eyebrow">Headcount Required</p>
-          <h2>111 recommended ADs, placed where coverage and ARR justify the move.</h2>
+          <p class="eyebrow">Sub-Region Design</p>
+          <h2>Sub-region scale, customer density, ARR load, and AD allocation.</h2>
         </div>
         <div class="result-count" id="territory-count"></div>
       </div>
       <div class="territory-layout">
         <div class="chart-surface">
           <div class="chart-header">
-            <h3>Whitespace by territory</h3>
+            <h3>Accounts by sub-region</h3>
             <span id="whitespace-total"></span>
           </div>
           <div class="bar-chart" id="territory-bars"></div>
         </div>
         <div class="chart-surface">
           <div class="chart-header">
-            <h3>Geo allocation</h3>
-            <span>ADs + accounts</span>
+            <h3>Regional load by geo</h3>
+            <span>Accounts, ARR, ADs</span>
           </div>
           <div class="geo-grid" id="geo-grid"></div>
         </div>
@@ -197,14 +258,15 @@
         <table>
           <thead>
             <tr>
-              <th>Territory</th>
+              <th>Sub-region</th>
               <th>Geo</th>
               <th>Tier</th>
-              <th>Coverage</th>
-              <th>Target</th>
-              <th>Whitespace</th>
-              <th>ADs</th>
+              <th>Total accounts</th>
+              <th>Customers</th>
+              <th>ADs in model</th>
               <th>ARR</th>
+              <th>ARR / AD</th>
+              <th>Accounts / AD</th>
             </tr>
           </thead>
           <tbody id="territory-table"></tbody>
@@ -212,15 +274,16 @@
       </div>
     </section>
 
-    <section class="band band--segments">
+    <section class="band band--segments" id="headcount">
       <div class="section-heading section-heading--row">
         <div>
-          <p class="eyebrow">Headcount Detail</p>
-          <h2>Recommended ADs by geo, market tier, and segment.</h2>
+          <p class="eyebrow">Headcount Required</p>
+          <h2>Current and required AD coverage by region and segment, starting with North.</h2>
+          <p class="section-note">Enterprise combines Large Enterprise and Enterprise from the coverage model because the current HC request does not split those groups. Territory-level current AD counts are not published in the source model, so current ADs are shown at region-and-segment level.</p>
         </div>
         <div class="legend">
-          <span><i class="legend__swatch legend__swatch--arr"></i>ARR</span>
-          <span><i class="legend__swatch legend__swatch--white"></i>Whitespace</span>
+          <span><i class="legend__swatch legend__swatch--arr"></i>Current ADs</span>
+          <span><i class="legend__swatch legend__swatch--white"></i>Required ADs</span>
         </div>
       </div>
       <div class="segment-grid" id="segment-grid"></div>
@@ -229,92 +292,157 @@
     <section class="band" id="accounts">
       <div class="section-heading section-heading--row">
         <div>
-          <p class="eyebrow">Key Accounts</p>
-          <h2>Priority accounts for the selected region, tier, and segment.</h2>
+          <p class="eyebrow">Top 100 Must-Win Accounts</p>
+          <h2>The EMEA Must Win Dashboard portfolio: the accounts we most need to win.</h2>
+          <p class="section-note">This section is a dashboard view of the Top 100 identified in the EMEA Must Win Dashboard. Start with the portfolio metrics, then filter and inspect the specific accounts by country, segment, priority bucket, ARR, and pipeline.</p>
         </div>
-        <div>
-          <a class="text-link" href="../emea-must-win-dashboard/index.html">Open full command deck</a>
-          <div class="result-count" id="account-count"></div>
+        <div class="result-count" id="account-count"></div>
+      </div>
+      <div class="mustwin-deck">
+        <div class="mustwin-statusbar">
+          <div>
+            <p class="eyebrow">EMEA Must Win</p>
+            <h3>Command Deck</h3>
+            <p class="section-note" id="mustwin-status-copy"></p>
+          </div>
+          <div class="mustwin-badges" id="mustwin-badges"></div>
+        </div>
+        <div class="mustwin-kpis" id="mustwin-kpis"></div>
+        <div class="mustwin-panels">
+          <section class="mustwin-panel">
+            <div class="account-controls-heading">
+              <div>
+                <p class="eyebrow">Rollup</p>
+                <h3>Country</h3>
+              </div>
+            </div>
+            <div class="mustwin-bar-list" id="mustwin-country-bars"></div>
+          </section>
+          <section class="mustwin-panel">
+            <div class="account-controls-heading">
+              <div>
+                <p class="eyebrow">Rollup</p>
+                <h3>Priority Bucket</h3>
+              </div>
+            </div>
+            <div class="mustwin-bar-list" id="mustwin-priority-bars"></div>
+          </section>
+        </div>
+      </div>
+      <div class="forecast-review-panel" id="forecast-review-panel">
+        <div class="account-controls-heading">
+          <div>
+            <p class="eyebrow">Revenue-First Forecast Mode</p>
+            <h3>Talk track for April 20 and April 22 forecast reviews.</h3>
+          </div>
+        </div>
+        <div class="forecast-review-grid">
+          <article>
+            <span>April 20</span>
+            <strong>Immediate revenue and consumption calls</strong>
+            <div class="forecast-account-list" id="april20-upside-list"></div>
+          </article>
+          <article>
+            <span>April 22</span>
+            <strong>Upside accounts to pressure test</strong>
+            <div class="forecast-account-list" id="april22-upside-list"></div>
+          </article>
+          <article>
+            <span>Pricing Assumption Watch</span>
+            <strong>iCARR still on old pricing assumptions</strong>
+            <div class="forecast-account-list" id="icarr-watch-list"></div>
+          </article>
         </div>
       </div>
       <div class="must-win-status">
         <div>
-          <p class="eyebrow">Command Deck Context</p>
-          <h3>Must-win ARR, pipeline, and account priority are folded into the key-account view.</h3>
+          <p class="eyebrow">Must-Win Narrative</p>
+          <h3>Use the Must Win Dashboard to focus the field on the highest-value accounts in EMEA.</h3>
         </div>
         <p id="must-win-status"></p>
       </div>
-      <div class="must-win-layout must-win-layout--accounts">
-        <div class="chart-surface">
-          <div class="chart-header">
-            <h3>Open pipeline by country</h3>
-            <span>Top markets</span>
-          </div>
-          <div class="bar-chart" id="must-win-country-bars"></div>
-        </div>
-        <div class="chart-surface">
-          <div class="chart-header">
-            <h3>Portfolio buckets</h3>
-            <span>ARR + pipeline</span>
-          </div>
-          <div class="bar-chart" id="must-win-priority-bars"></div>
-        </div>
-      </div>
       <div class="account-insights" id="account-insights"></div>
-      <div class="account-controls" aria-label="Account explorer filters">
-        <label>
-          Account segment
-          <select id="account-segment-filter"></select>
-        </label>
-        <label>
-          Classification
-          <select id="account-classification-filter"></select>
-        </label>
-        <label>
-          ARR
-          <select id="account-arr-filter"></select>
-        </label>
-        <label>
-          Pipeline
-          <select id="account-pipeline-filter"></select>
-        </label>
-        <label>
-          Source
-          <select id="account-source-filter"></select>
-        </label>
-        <label>
-          Sort
-          <select id="account-sort-filter">
-            <option value="Priority">Priority</option>
-            <option value="ARR">ARR high to low</option>
-            <option value="Pipeline">Pipeline high to low</option>
-            <option value="Revenue">Revenue high to low</option>
-            <option value="Name">Name A-Z</option>
-          </select>
-        </label>
+      <div class="account-controls-shell">
+        <div class="account-controls-heading">
+          <div>
+            <p class="eyebrow">Account Explorer</p>
+            <h3>Review the Top 100 by segment, priority bucket, vertical, ARR, and pipeline.</h3>
+          </div>
+        </div>
+        <div class="account-controls" aria-label="Account explorer filters">
+          <label>
+            Account segment
+            <select id="account-segment-filter"></select>
+          </label>
+          <label>
+            Classification
+            <select id="account-classification-filter"></select>
+          </label>
+          <label>
+            Vertical
+            <select id="account-vertical-filter"></select>
+          </label>
+          <label>
+            ARR
+            <select id="account-arr-filter"></select>
+          </label>
+          <label>
+            Pipeline
+            <select id="account-pipeline-filter"></select>
+          </label>
+          <label>
+            Sort
+            <select id="account-sort-filter">
+              <option value="Priority">Priority</option>
+              <option value="ARR">ARR high to low</option>
+              <option value="Pipeline">Pipeline high to low</option>
+              <option value="Revenue">Revenue high to low</option>
+              <option value="Name">Name A-Z</option>
+            </select>
+          </label>
+        </div>
       </div>
-      <div class="account-table-wrap">
-        <table class="account-table">
-          <thead>
-            <tr>
-              <th>Account</th>
-              <th>Segment</th>
-              <th>Classification</th>
-              <th>Geo</th>
-              <th>Territory</th>
-              <th>ARR</th>
-              <th>Pipeline</th>
-              <th>Owner</th>
-              <th>Source</th>
-            </tr>
-          </thead>
-          <tbody id="account-table"></tbody>
-        </table>
+      <div class="account-workbench">
+        <aside class="account-sidebar">
+          <div class="account-detail" id="account-detail"></div>
+        </aside>
+        <div class="account-main">
+          <div class="account-panel">
+            <div class="account-panel__header">
+              <div>
+                <p class="eyebrow">Must-Win Table</p>
+                <h3>Top 100 accounts from the Must Win Dashboard in the current filtered view.</h3>
+              </div>
+            </div>
+            <div class="account-table-wrap">
+              <table class="account-table">
+                <thead>
+                  <tr>
+                    <th>Account</th>
+                    <th>Country</th>
+                    <th>Segment</th>
+                    <th>Classification</th>
+                    <th>Vertical</th>
+                    <th>ARR</th>
+                    <th>Pipeline</th>
+                    <th>Forecast focus</th>
+                    <th>Pricing flag</th>
+                    <th>Owner</th>
+                    <th>Quarter</th>
+                  </tr>
+                </thead>
+                <tbody id="account-table"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   </main>
 
   <script src="data.js"></script>
+  <script src="salesforce-data.js"></script>
+  <script src="kepler-metrics.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
