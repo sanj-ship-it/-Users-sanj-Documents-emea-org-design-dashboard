@@ -1,9 +1,7 @@
 const data = window.dashboardData;
-const salesforce = window.salesforceData || { accounts: [], summary: {}, rollups: {}, meta: {} };
 
 const state = {
   geo: "All",
-  country: "All",
   tier: "All",
   segment: "All",
   search: "",
@@ -12,19 +10,15 @@ const state = {
   accountArr: "All",
   accountPipeline: "All",
   accountSource: "All",
-  accountSort: "Priority",
-  selectedAccountKey: ""
+  accountSort: "Priority"
 };
 
 const selectors = {
   metrics: document.querySelector("#metrics"),
   geoFilter: document.querySelector("#geo-filter"),
-  countryFilter: document.querySelector("#country-filter"),
   tierFilter: document.querySelector("#tier-filter"),
   segmentFilter: document.querySelector("#segment-filter"),
   searchFilter: document.querySelector("#search-filter"),
-  filterChips: document.querySelector("#filter-chips"),
-  resetFilters: document.querySelector("#reset-filters"),
   mustWinCountryBars: document.querySelector("#must-win-country-bars"),
   mustWinPriorityBars: document.querySelector("#must-win-priority-bars"),
   mustWinStatus: document.querySelector("#must-win-status"),
@@ -41,7 +35,6 @@ const selectors = {
   accountPipelineFilter: document.querySelector("#account-pipeline-filter"),
   accountSourceFilter: document.querySelector("#account-source-filter"),
   accountSortFilter: document.querySelector("#account-sort-filter"),
-  accountDetail: document.querySelector("#account-detail"),
   accountTable: document.querySelector("#account-table"),
   accountCount: document.querySelector("#account-count")
 };
@@ -68,10 +61,6 @@ function formatOptionalMoney(value) {
   return formatMoney(value);
 }
 
-function isLoaded(value) {
-  return value !== null && value !== undefined && value !== "";
-}
-
 function formatPercent(value) {
   return `${(value * 100).toFixed(1)}%`;
 }
@@ -86,17 +75,12 @@ function unique(items) {
 
 function populateFilters() {
   addOptions(selectors.geoFilter, ["All", ...unique(data.territories.map((item) => item.geo))]);
-  addOptions(selectors.countryFilter, ["All", ...unique(salesforce.accounts.map((item) => item.country).filter(Boolean))]);
   addOptions(selectors.tierFilter, ["All", ...unique(data.territories.map((item) => item.tier))]);
   addOptions(selectors.segmentFilter, ["All", ...unique(data.segmentDetails.map((item) => item.segment))]);
   populateAccountFilters();
 
   selectors.geoFilter.addEventListener("change", () => {
     state.geo = selectors.geoFilter.value;
-    render();
-  });
-  selectors.countryFilter.addEventListener("change", () => {
-    state.country = selectors.countryFilter.value;
     render();
   });
   selectors.tierFilter.addEventListener("change", () => {
@@ -111,7 +95,6 @@ function populateFilters() {
     state.search = selectors.searchFilter.value.trim().toLowerCase();
     render();
   });
-  selectors.resetFilters.addEventListener("click", resetFilters);
 }
 
 function populateAccountFilters() {
@@ -156,69 +139,13 @@ function addOptions(select, options) {
   select.innerHTML = options.map((option) => `<option value="${escapeAttr(option)}">${option}</option>`).join("");
 }
 
-function resetFilters() {
-  state.geo = "All";
-  state.country = "All";
-  state.tier = "All";
-  state.segment = "All";
-  state.search = "";
-  state.accountSegment = "All";
-  state.accountClassification = "All";
-  state.accountArr = "All";
-  state.accountPipeline = "All";
-  state.accountSource = "All";
-  state.accountSort = "Priority";
-  state.selectedAccountKey = "";
-
-  selectors.geoFilter.value = state.geo;
-  selectors.countryFilter.value = state.country;
-  selectors.tierFilter.value = state.tier;
-  selectors.segmentFilter.value = state.segment;
-  selectors.searchFilter.value = state.search;
-  selectors.accountSegmentFilter.value = state.accountSegment;
-  selectors.accountClassificationFilter.value = state.accountClassification;
-  selectors.accountArrFilter.value = state.accountArr;
-  selectors.accountPipelineFilter.value = state.accountPipeline;
-  selectors.accountSourceFilter.value = state.accountSource;
-  selectors.accountSortFilter.value = state.accountSort;
-
-  render();
-}
-
-function renderFilterChips() {
-  const chips = [
-    ["Geo", state.geo],
-    ["Country", state.country],
-    ["Tier", state.tier],
-    ["Planning segment", state.segment],
-    ["Search", state.search],
-    ["Account segment", state.accountSegment],
-    ["Classification", state.accountClassification],
-    ["ARR", state.accountArr],
-    ["Pipeline", state.accountPipeline],
-    ["Source", state.accountSource],
-    ["Sort", state.accountSort]
-  ].filter(([, value]) => value && value !== "All" && value !== "Priority");
-
-  selectors.filterChips.innerHTML = chips.length
-    ? chips.map(([label, value]) => `<span class="filter-chip">${label}: ${value}</span>`).join("")
-    : `<span class="filter-chip filter-chip--quiet">All markets · all accounts</span>`;
-}
-
-function renderMetrics(accounts) {
-  const loadedArr = accounts.filter((item) => isLoaded(item.arr));
-  const loadedPipeline = accounts.filter((item) => isLoaded(item.pipeline));
-  const currentArr = loadedArr.reduce((sum, item) => sum + Number(item.arr || 0), 0);
-  const openPipeline = loadedPipeline.reduce((sum, item) => sum + Math.max(0, Number(item.pipeline || 0)), 0);
-  const arrCustomers = loadedArr.filter((item) => Number(item.arr || 0) > 0).length;
-  const latestArr = salesforce.meta?.sources?.arr?.latest_snapshot || "latest Salesforce ARR snapshot";
-  const latestPipeline = salesforce.meta?.sources?.pipeline?.latest_snapshot || "latest Salesforce pipeline snapshot";
+function renderMetrics() {
   const metrics = [
-    { label: "Salesforce accounts", value: formatDecimal(accounts.length), note: "filtered SFDC matched accounts in scope" },
-    { label: "Current ARR", value: formatMoney(currentArr), note: `${formatDecimal(loadedArr.length)} accounts loaded from ${latestArr}` },
-    { label: "Open pipeline", value: formatMoney(openPipeline), note: `${formatDecimal(loadedPipeline.length)} accounts loaded from ${latestPipeline}` },
-    { label: "ARR customers", value: formatDecimal(arrCustomers), note: "accounts with positive current ARR" },
-    { label: "Recommended ADs", value: formatDecimal(data.summary.recommendedAds), note: `${data.summary.managers} managers from the planning model` }
+    { label: "Current coverage", value: formatPercent(data.summary.currentCoverage), note: `${formatDecimal(data.summary.accountsInBooks)} / ${formatDecimal(data.summary.totalAccounts)} accounts in books` },
+    { label: "Recommended coverage", value: formatPercent(data.summary.recommendedCoverage), note: `+${formatPercent(data.summary.coverageGap)} coverage gap to close` },
+    { label: "Whitespace", value: `+${formatDecimal(data.summary.incrementalAccounts)}`, note: "incremental accounts covered at target" },
+    { label: "Recommended ADs", value: formatDecimal(data.summary.recommendedAds), note: `${data.summary.managers} managers at the planning ratio` },
+    { label: "Book ARR", value: formatMoney(data.summary.bookArr), note: `${formatDecimal(data.summary.customers)} customers in the roll-up` }
   ];
 
   selectors.metrics.innerHTML = metrics.map((metric) => `
@@ -232,36 +159,19 @@ function renderMetrics(accounts) {
 
 function renderMustWin() {
   const mustWin = data.mustWin;
-  const summary = salesforce.summary || {};
-  const generatedAt = salesforce.meta?.generatedAt || mustWin.generatedAt;
-  const latestArr = salesforce.meta?.sources?.arr?.latest_snapshot || mustWin.summary.latestArrSnapshot;
-  const latestPipeline = salesforce.meta?.sources?.pipeline?.latest_snapshot || mustWin.summary.latestPipelineSnapshot;
-  selectors.mustWinStatus.textContent = `${formatDecimal(summary.accounts_in_scope || mustWin.summary.accountsInScope)} Salesforce accounts · ${formatMoney(summary.current_arr_usd || mustWin.summary.currentArrUsd)} current ARR · ${formatMoney(summary.open_pipeline_usd || mustWin.summary.openPipelineUsd)} open pipeline. Generated ${generatedAt}; ARR / pipeline snapshots are ${latestArr} / ${latestPipeline}.`;
-
-  const countryPipeline = (salesforce.rollups?.country || mustWin.countryPipeline).map((row) => ({
-    country: row.label || row.country,
-    accounts: row.count || row.accounts,
-    arr: row.current_arr_usd ?? row.arr,
-    pipeline: row.open_pipeline_usd ?? row.pipeline
-  }));
-
-  const priorityBuckets = (salesforce.rollups?.priority_bucket || mustWin.priorityBuckets).map((row) => ({
-    bucket: row.label || row.bucket,
-    accounts: row.count || row.accounts,
-    arr: row.current_arr_usd ?? row.arr,
-    pipeline: row.open_pipeline_usd ?? row.pipeline
-  }));
+  const summary = mustWin.summary;
+  selectors.mustWinStatus.textContent = `${formatDecimal(summary.accountsInScope)} must-win accounts · ${formatMoney(summary.currentArrUsd)} current ARR · ${formatMoney(summary.openPipelineUsd)} open pipeline. Generated ${mustWin.generatedAt}; ARR / pipeline snapshots are ${summary.latestArrSnapshot} / ${summary.latestPipelineSnapshot}.`;
 
   renderMustWinBars(
     selectors.mustWinCountryBars,
-    countryPipeline,
+    mustWin.countryPipeline,
     "country",
     "pipeline",
     (row) => `${formatMoney(row.pipeline)} pipeline · ${row.accounts} accts`
   );
   renderMustWinBars(
     selectors.mustWinPriorityBars,
-    priorityBuckets,
+    mustWin.priorityBuckets,
     "bucket",
     "pipeline",
     (row) => `${row.accounts} accts · ${formatMoney(row.arr)} ARR`
@@ -287,7 +197,6 @@ function renderMustWinBars(target, rows, labelKey, valueKey, note) {
 function filteredTerritories() {
   return data.territories
     .filter((item) => state.geo === "All" || item.geo === state.geo)
-    .filter((item) => state.country === "All" || item.territory === countryToTerritory(state.country))
     .filter((item) => state.tier === "All" || item.tier === state.tier)
     .filter((item) => {
       if (state.segment === "All") return true;
@@ -305,29 +214,16 @@ function filteredTerritories() {
 }
 
 function filteredSegments() {
-  return data.segmentCapacity
+  return data.segmentDetails
     .filter((item) => state.geo === "All" || item.geo === state.geo)
-    .filter((item) => state.country === "All" || item.geo === countryToGeo(state.country))
-    .filter((item) => capacitySegmentMatches(item.segment, state.segment))
-    .filter((item) => !state.search || searchable([item.geo, item.segment, ...territoriesForGeo(item.geo)]).includes(state.search));
-}
-
-function capacitySegmentMatches(itemSegment, selectedSegment) {
-  if (selectedSegment === "All") return true;
-  if (selectedSegment === "Large Enterprise") return itemSegment === "Enterprise";
-  return itemSegment === selectedSegment;
-}
-
-function territoriesForGeo(geo) {
-  return data.territories
-    .filter((item) => item.geo === geo)
-    .map((item) => item.territory);
+    .filter((item) => state.tier === "All" || item.tier === state.tier)
+    .filter((item) => state.segment === "All" || item.segment === state.segment)
+    .filter((item) => !state.search || searchable([item.territory, item.geo, item.tier, item.segment]).includes(state.search));
 }
 
 function filteredAccounts() {
   return keyAccounts()
     .filter((item) => state.geo === "All" || item.geo === state.geo)
-    .filter((item) => state.country === "All" || item.country === state.country)
     .filter((item) => state.tier === "All" || item.tier === state.tier)
     .filter((item) => state.segment === "All" || item.segments.includes(state.segment))
     .filter((item) => state.accountSegment === "All" || item.segments.includes(state.accountSegment))
@@ -351,39 +247,6 @@ function filteredAccounts() {
         item.source
       ]).includes(state.search);
     });
-}
-
-function filteredSalesforceAccounts() {
-  return salesforceKeyAccounts()
-    .filter((item) => state.geo === "All" || item.geo === state.geo)
-    .filter((item) => state.country === "All" || item.country === state.country)
-    .filter((item) => state.tier === "All" || item.tier === state.tier)
-    .filter((item) => state.segment === "All" || item.segments.includes(state.segment))
-    .filter((item) => state.accountSegment === "All" || item.segments.includes(state.accountSegment))
-    .filter((item) => state.accountClassification === "All" || item.classification === state.accountClassification)
-    .filter((item) => state.accountSource === "All" || item.source === state.accountSource)
-    .filter((item) => passesMoneyFilter(item.arr, state.accountArr, "ARR"))
-    .filter((item) => passesMoneyFilter(item.pipeline, state.accountPipeline, "Pipeline"))
-    .filter((item) => {
-      if (!state.search) return true;
-      return searchable([
-        item.name,
-        item.territory,
-        item.geo,
-        item.tier,
-        item.segment,
-        item.priority,
-        item.classification,
-        item.country,
-        item.status,
-        item.owner,
-        item.source
-      ]).includes(state.search);
-    });
-}
-
-function accountKey(item) {
-  return `${item.source}::${item.rank}::${item.name}`;
 }
 
 function passesMoneyFilter(value, filter, kind) {
@@ -399,40 +262,24 @@ function passesMoneyFilter(value, filter, kind) {
 }
 
 function territoryToGeo(territory) {
-  return data.territories.find((item) => item.territory === territory)?.geo || "Other";
+  return data.territories.find((item) => item.territory === territory)?.geo || "North";
 }
 
 function territoryToTier(territory) {
-  return data.territories.find((item) => item.territory === territory)?.tier || "N/A";
+  return data.territories.find((item) => item.territory === territory)?.tier || "Tier 1";
 }
 
 function countryToTerritory(country) {
   const normalized = country.toLowerCase();
   if (normalized.includes("netherlands/uk")) return "UKI";
-  if (normalized.includes("united kingdom") || normalized === "uk") return "UKI";
-  if (normalized.includes("ireland")) return "UKI";
-  if (normalized.includes("netherlands") || normalized.includes("belgium")) return "Netherlands/Belgium/Luxembourg";
-  if (normalized.includes("sweden") || normalized.includes("finland")) return "Sweden";
-  if (normalized.includes("norway") || normalized.includes("denmark")) return "Norway/Denmark";
-  if (normalized.includes("israel")) return "Israel";
-  if (normalized.includes("germany")) return "Germany";
-  if (normalized.includes("switzerland") || normalized.includes("austria")) return "Switzerland/Austria";
-  if (normalized.includes("poland") || normalized.includes("czech")) return "Poland";
-  if (normalized.includes("france")) return "France";
-  if (normalized.includes("spain")) return "Spain";
-  if (normalized.includes("italy")) return "Italy";
-  if (normalized.includes("united arab emirates") || normalized === "uae" || normalized.includes("bahrain") || normalized.includes("cyprus") || normalized.includes("turkiye") || normalized.includes("türkiye") || normalized.includes("turkey")) return "Rest of MEA";
   if (normalized === "netherlands") return "Netherlands/Belgium/Luxembourg";
-  return "Other";
-}
-
-function countryToGeo(country) {
-  return territoryToGeo(countryToTerritory(country));
-}
-
-function normalizeCountry(country) {
-  if (!country) return "Unknown";
-  if (country === "United Kingdom") return "UK";
+  if (normalized.includes("uk") || normalized.includes("ireland")) return "UKI";
+  if (normalized.includes("germany")) return "Germany";
+  if (normalized.includes("france")) return "France";
+  if (normalized.includes("sweden")) return "Sweden";
+  if (normalized.includes("spain")) return "Spain";
+  if (normalized.includes("switzerland")) return "Switzerland/Austria";
+  if (normalized.includes("denmark")) return "Norway/Denmark";
   return country;
 }
 
@@ -456,7 +303,7 @@ function keyAccounts() {
       segments: ["Enterprise", "Large Enterprise"],
       priority: account.vertical,
       classification: account.type,
-      country: normalizeCountry(account.country),
+      country: account.country,
       status: account.type,
       owner: account.owner,
       arr: account.arr,
@@ -467,38 +314,34 @@ function keyAccounts() {
     };
   });
 
-  return [...salesforceKeyAccounts(), ...planningAccounts];
-}
-
-function salesforceKeyAccounts() {
-  return salesforce.accounts.map((account) => {
-    const country = normalizeCountry(account.country);
-    const territory = countryToTerritory(country);
+  const mustWinAccounts = data.mustWin.accounts.map((account) => {
+    const territory = countryToTerritory(account.country);
     const geo = territoryToGeo(territory);
     const tier = territoryToTier(territory);
-    const segment = account.segment || "Enterprise";
     return {
-      source: "Salesforce",
+      source: "Must-win command deck",
       sortGroup: 1,
       rank: account.rank,
       name: account.name,
       territory,
       geo,
       tier,
-      segment,
-      segments: [segment],
-      priority: account.priorityBucket,
-      classification: account.priorityBucket,
-      country,
-      status: account.nearestCloseQuarter || account.status,
+      segment: mustWinSegment(account),
+      segments: [mustWinSegment(account)],
+      priority: account.bucket,
+      classification: account.bucket,
+      country: account.country,
+      status: account.quarter || "Execution watch",
       owner: account.owner,
-      arr: account.currentArrUsd,
-      pipeline: Math.max(0, Number(account.openPipelineUsd || 0)),
-      quarter: account.nearestCloseQuarter,
+      arr: account.arr,
+      pipeline: account.pipeline,
+      quarter: account.quarter,
       revenueB: null,
       employees: null
     };
   });
+
+  return [...mustWinAccounts, ...planningAccounts];
 }
 
 function searchable(parts) {
@@ -573,41 +416,34 @@ function renderGeos() {
 }
 
 function renderSegments(items) {
-  const sorted = [...items].sort((a, b) => b.gapAds - a.gapAds || b.whitespace - a.whitespace);
-  const maxGap = Math.max(...data.segmentCapacity.map((item) => item.gapAds), 1);
-
+  const sorted = [...items].sort((a, b) => b.whitespace - a.whitespace).slice(0, 12);
+  const maxWhitespace = Math.max(...data.segmentDetails.map((item) => item.whitespace));
   selectors.segmentGrid.innerHTML = sorted.map((item) => `
-    <article class="segment-tile segment-tile--capacity">
+    <article class="segment-tile">
       <div class="segment-tile__topline">
-        <span>${item.geo} / ${item.segment}</span>
-        <strong>${formatDecimal(item.recommendedAds)} rec ADs</strong>
+        <span>${item.geo} / ${item.tier}</span>
+        <strong>${item.ads} ADs</strong>
       </div>
-      <h3>${item.gapAds > 0 ? `+${formatDecimal(item.gapAds)}` : "No"} AD gap</h3>
+      <h3>${item.territory} · ${item.segment}</h3>
       <div class="segment-tile__bar">
-        <span style="width:${Math.max(4, item.gapAds / maxGap * 100)}%"></span>
+        <span style="width:${Math.max(4, item.whitespace / maxWhitespace * 100)}%"></span>
       </div>
-      <dl class="segment-capacity">
-        <div><dt>Current ADs</dt><dd>${formatDecimal(item.currentAds)}</dd></div>
-        <div><dt>Whitespace</dt><dd>+${formatDecimal(item.whitespace)}</dd></div>
-        <div><dt>Customers</dt><dd>${formatDecimal(item.customers)}</dd></div>
-        <div><dt>ARR</dt><dd>${formatMoney(item.arr)}</dd></div>
-      </dl>
+      <p>+${formatDecimal(item.whitespace)} accounts · ${formatMoney(item.arr)} ARR · ${formatDecimal(item.customers)} customers</p>
     </article>
-  `).join("") || `<article class="segment-tile segment-tile--empty"><h3>No matching segment capacity</h3><p>Clear the segment search to bring the regional headcount model back into view.</p></article>`;
+  `).join("");
 }
 
 function renderAccounts(items) {
   const sorted = sortAccounts(items);
-  const loadedArr = sorted.filter((item) => isLoaded(item.arr));
-  const loadedPipeline = sorted.filter((item) => isLoaded(item.pipeline));
+  const loadedArr = sorted.filter((item) => item.arr !== null && item.arr !== undefined);
+  const loadedPipeline = sorted.filter((item) => item.pipeline !== null && item.pipeline !== undefined);
   const totalArr = loadedArr.reduce((sum, item) => sum + Number(item.arr || 0), 0);
   const totalPipeline = loadedPipeline.reduce((sum, item) => sum + Number(item.pipeline || 0), 0);
-  const selectedAccount = selectedOrFirstAccount(sorted);
 
   selectors.accountCount.textContent = `${sorted.length} accounts`;
 
   selectors.accountInsights.innerHTML = [
-    { label: "Filtered accounts", value: formatDecimal(sorted.length), note: `${state.geo} geo · ${state.country} country · ${state.segment} planning segment` },
+    { label: "Filtered accounts", value: formatDecimal(sorted.length), note: `${state.geo} geo · ${state.tier} tier · ${state.segment} planning segment` },
     { label: "Loaded ARR", value: formatMoney(totalArr), note: `${loadedArr.length} accounts with ARR loaded` },
     { label: "Open pipeline", value: formatMoney(totalPipeline), note: `${loadedPipeline.length} accounts with pipeline loaded` },
     { label: "Classifications", value: formatDecimal(unique(sorted.map((item) => item.classification)).length), note: unique(sorted.map((item) => item.classification)).join(", ") || "No matching accounts" }
@@ -619,10 +455,8 @@ function renderAccounts(items) {
     </article>
   `).join("");
 
-  renderAccountDetail(selectedAccount);
-
   selectors.accountTable.innerHTML = sorted.map((item) => `
-    <tr class="${accountKey(item) === state.selectedAccountKey ? "is-selected" : ""}" data-account-key="${escapeAttr(accountKey(item))}">
+    <tr>
       <td><strong>${item.name}</strong><small>#${item.rank} · ${item.country}${item.revenueB ? ` · $${item.revenueB.toFixed(1)}B revenue` : ""}</small></td>
       <td>${item.segment}</td>
       <td><span class="account-pill">${item.classification}</span></td>
@@ -634,51 +468,6 @@ function renderAccounts(items) {
       <td>${item.source}</td>
     </tr>
   `).join("") || `<tr><td colspan="9"><strong>No matching accounts</strong><small>Loosen the account filters or clear the global search.</small></td></tr>`;
-
-  selectors.accountTable.querySelectorAll("tr[data-account-key]").forEach((row) => {
-    row.addEventListener("click", () => {
-      state.selectedAccountKey = row.dataset.accountKey;
-      renderAccounts(filteredAccounts());
-    });
-  });
-}
-
-function selectedOrFirstAccount(items) {
-  const selected = items.find((item) => accountKey(item) === state.selectedAccountKey);
-  if (selected) return selected;
-  const first = items[0];
-  state.selectedAccountKey = first ? accountKey(first) : "";
-  return first || null;
-}
-
-function renderAccountDetail(account) {
-  if (!account) {
-    selectors.accountDetail.innerHTML = `
-      <div>
-        <p class="eyebrow">Selected Account</p>
-        <h3>No account selected.</h3>
-      </div>
-      <p>Loosen the filters to bring account records back into scope.</p>
-    `;
-    return;
-  }
-
-  const pipelineNote = isLoaded(account.pipeline) ? `${formatMoney(account.pipeline)} open pipeline` : "No pipeline loaded";
-  const arrNote = isLoaded(account.arr) ? `${formatMoney(account.arr)} current ARR` : "No ARR loaded";
-
-  selectors.accountDetail.innerHTML = `
-    <div>
-      <p class="eyebrow">Selected Account</p>
-      <h3>${account.name}</h3>
-      <p>${account.classification} · ${account.segment} · ${account.geo} / ${account.territory}</p>
-    </div>
-    <dl>
-      <div><dt>ARR</dt><dd>${arrNote}</dd></div>
-      <div><dt>Pipeline</dt><dd>${pipelineNote}</dd></div>
-      <div><dt>Owner</dt><dd>${account.owner}</dd></div>
-      <div><dt>Source</dt><dd>${account.source}</dd></div>
-    </dl>
-  `;
 }
 
 function sortAccounts(items) {
@@ -709,15 +498,13 @@ function render() {
   const territories = filteredTerritories();
   const segments = filteredSegments();
   const accounts = filteredAccounts();
-  const salesforceAccounts = filteredSalesforceAccounts();
 
-  renderMetrics(salesforceAccounts);
   renderTerritories(territories);
   renderSegments(segments);
   renderAccounts(accounts);
-  renderFilterChips();
 }
 
+renderMetrics();
 renderMustWin();
 renderGeos();
 populateFilters();

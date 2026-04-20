@@ -55,7 +55,7 @@
     <section class="band band--overview" id="overview">
       <div class="section-heading">
         <p class="eyebrow">Key Data Points</p>
-        <h2>Salesforce account, ARR, pipeline, and headcount signals.</h2>
+        <h2>Coverage, whitespace, headcount, and book size.</h2>
       </div>
       <div class="metrics" id="metrics"></div>
     </section>
@@ -155,10 +155,6 @@
           <select id="geo-filter"></select>
         </label>
         <label>
-          Country
-          <select id="country-filter"></select>
-        </label>
-        <label>
           Tier
           <select id="tier-filter"></select>
         </label>
@@ -170,10 +166,6 @@
           Search
           <input id="search-filter" type="search" placeholder="Territory, account, owner, industry">
         </label>
-      </div>
-      <div class="filter-summary">
-        <div class="filter-chips" id="filter-chips"></div>
-        <button class="button button--reset" id="reset-filters" type="button">Reset filters</button>
       </div>
     </section>
 
@@ -224,12 +216,11 @@
       <div class="section-heading section-heading--row">
         <div>
           <p class="eyebrow">Headcount Detail</p>
-          <h2>Current and recommended ADs by region and segment.</h2>
-          <p class="section-note">Enterprise combines Large Enterprise and Enterprise from the coverage model because the current HC file does not split them. Startups appear in the HC request, but are not in the coverage-model roll-up. The Tier filter does not apply here because current ADs are published at regional level.</p>
+          <h2>Recommended ADs by geo, market tier, and segment.</h2>
         </div>
         <div class="legend">
-          <span><i class="legend__swatch legend__swatch--arr"></i>Current ADs</span>
-          <span><i class="legend__swatch legend__swatch--white"></i>AD gap</span>
+          <span><i class="legend__swatch legend__swatch--arr"></i>ARR</span>
+          <span><i class="legend__swatch legend__swatch--white"></i>Whitespace</span>
         </div>
       </div>
       <div class="segment-grid" id="segment-grid"></div>
@@ -302,7 +293,6 @@
           </select>
         </label>
       </div>
-      <div class="account-detail" id="account-detail"></div>
       <div class="account-table-wrap">
         <table class="account-table">
           <thead>
@@ -325,7 +315,6 @@
   </main>
 
   <script src="data.js"></script>
-  <script src="salesforce-data.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

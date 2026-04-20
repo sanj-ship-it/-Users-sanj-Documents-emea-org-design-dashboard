@@ -9,8 +9,7 @@
   --red: #c84835;
   --yellow: #e4bd3f;
   --charcoal: #252525;
-  --shadow: 0 12px 28px rgba(23, 23, 23, 0.09);
-  --shadow-hover: 0 16px 38px rgba(23, 23, 23, 0.14);
+  --shadow: 0 14px 40px rgba(23, 23, 23, 0.12);
 }
 
 * {
@@ -39,21 +38,6 @@ input,
 select {
   font: inherit;
   letter-spacing: 0;
-}
-
-button,
-select,
-input,
-a {
-  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease, color 160ms ease, transform 160ms ease;
-}
-
-button:focus-visible,
-select:focus-visible,
-input:focus-visible,
-a:focus-visible {
-  outline: 3px solid rgba(15, 139, 141, 0.28);
-  outline-offset: 2px;
 }
 
 .masthead {
@@ -168,21 +152,6 @@ h3 {
   color: #fff;
 }
 
-.button--reset {
-  min-height: 36px;
-  padding: 9px 12px;
-  border-color: var(--line);
-  background: #fff;
-  color: var(--ink);
-  cursor: pointer;
-}
-
-.button:hover,
-.button--reset:hover,
-.text-link:hover {
-  transform: translateY(-1px);
-}
-
 .band {
   padding: clamp(36px, 5vw, 88px) clamp(18px, 5vw, 96px);
 }
@@ -218,7 +187,6 @@ h3 {
   padding-bottom: 14px;
   background: rgba(247, 246, 242, 0.96);
   border-block: 1px solid var(--line);
-  backdrop-filter: blur(12px);
 }
 
 .band--narrative {
@@ -326,16 +294,6 @@ h3 {
   padding: clamp(18px, 2.4vw, 36px);
 }
 
-.tier-card:not(.tier-card--primary):hover,
-.region-grid article:hover,
-.metric:hover,
-.chart-surface:hover,
-.segment-tile:hover,
-.account-insight:hover {
-  border-color: #bdc5bf;
-  box-shadow: var(--shadow-hover);
-}
-
 .tier-card--primary {
   background: var(--green);
   color: #fff;
@@ -406,13 +364,6 @@ h3 {
   align-items: end;
 }
 
-.section-note {
-  max-width: 72ch;
-  margin-top: 12px;
-  color: var(--muted);
-  line-height: 1.55;
-}
-
 .metrics {
   display: grid;
   grid-template-columns: repeat(5, minmax(160px, 1fr));
@@ -471,11 +422,6 @@ h3 {
   color: var(--ink);
 }
 
-.bar-row:not(.bar-row--static):hover .bar-row__fill,
-.geo-tile:hover .geo-tile__meter span {
-  background: var(--teal);
-}
-
 .must-win-status {
   display: grid;
   grid-template-columns: minmax(260px, 0.8fr) minmax(320px, 1.2fr);
@@ -504,37 +450,6 @@ h3 {
 
 .filters {
   flex-wrap: wrap;
-}
-
-.filter-summary {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 14px;
-  margin-top: 12px;
-}
-
-.filter-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.filter-chip {
-  display: inline-flex;
-  align-items: center;
-  min-height: 32px;
-  padding: 7px 10px;
-  border: 1px solid #cfd7d2;
-  border-radius: 8px;
-  background: #fff;
-  color: var(--ink);
-  font: 700 0.74rem/1.2 "IBM Plex Mono", ui-monospace, monospace;
-  text-transform: uppercase;
-}
-
-.filter-chip--quiet {
-  color: var(--muted);
 }
 
 .filters label,
@@ -568,14 +483,6 @@ input {
   padding: 0 12px;
   background: #fff;
   color: var(--ink);
-}
-
-select:hover,
-input:hover,
-select:focus,
-input:focus {
-  border-color: var(--teal);
-  box-shadow: 0 0 0 3px rgba(15, 139, 141, 0.12);
 }
 
 .territory-layout {
@@ -677,13 +584,6 @@ input:focus {
   cursor: pointer;
 }
 
-.geo-tile:hover {
-  border-color: #bdc5bf;
-  background: #fff;
-  box-shadow: var(--shadow-hover);
-  transform: translateY(-1px);
-}
-
 .geo-tile > div {
   justify-content: space-between;
 }
@@ -717,9 +617,6 @@ td {
 }
 
 th {
-  position: sticky;
-  top: 0;
-  z-index: 1;
   background: #f6f7f7;
   color: var(--muted);
   font-size: 0.75rem;
@@ -791,7 +688,6 @@ tbody tr:hover {
   background: #fff;
   border-radius: 8px;
   box-shadow: var(--shadow);
-  max-height: 680px;
 }
 
 .account-table {
@@ -817,73 +713,10 @@ tbody tr:hover {
   white-space: nowrap;
 }
 
-.account-detail {
-  display: grid;
-  grid-template-columns: minmax(260px, 0.85fr) minmax(320px, 1.15fr);
-  gap: 22px;
-  align-items: center;
-  margin-bottom: 18px;
-  padding: 22px;
-  border: 1px solid var(--line);
-  border-left: 6px solid var(--green);
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: var(--shadow);
-}
-
-.account-detail h3 {
-  margin-top: 8px;
-  font-size: 2rem;
-  line-height: 1.05;
-}
-
-.account-detail p:not(.eyebrow) {
-  margin-top: 10px;
-  color: var(--muted);
-  line-height: 1.5;
-}
-
-.account-detail dl {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
-  margin: 0;
-}
-
-.account-detail dd {
-  margin: 6px 0 0;
-  font-weight: 800;
-  overflow-wrap: anywhere;
-}
-
-.account-table tbody tr {
-  cursor: pointer;
-}
-
-.account-table tbody tr.is-selected {
-  background: #edf6f3;
-  box-shadow: inset 4px 0 0 var(--green);
-}
-
-.account-table tbody tr.is-selected .account-pill {
-  border-color: rgba(0, 122, 90, 0.34);
-  background: #e2f1ec;
-}
-
 .segment-tile {
   display: grid;
   gap: 18px;
   padding: 22px;
-}
-
-.segment-tile--capacity {
-  align-content: start;
-  min-height: 268px;
-}
-
-.segment-tile--capacity h3 {
-  font-size: clamp(1.8rem, 2.6vw, 3rem);
-  line-height: 0.95;
 }
 
 .segment-tile__topline {
@@ -896,34 +729,6 @@ tbody tr:hover {
 
 .segment-tile__bar span {
   background: var(--yellow);
-}
-
-.segment-capacity {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin: 2px 0 0;
-}
-
-.segment-capacity div {
-  min-height: 74px;
-  display: grid;
-  align-content: space-between;
-  gap: 8px;
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #f7f9f8;
-}
-
-.segment-capacity dd {
-  margin: 0;
-  font-size: clamp(1rem, 1.35vw, 1.35rem);
-  font-weight: 800;
-}
-
-.segment-tile--empty {
-  grid-column: 1 / -1;
 }
 
 .legend {
@@ -952,7 +757,6 @@ tbody tr:hover {
   .territory-layout,
   .must-win-layout,
   .must-win-status,
-  .account-detail,
   .band--narrative,
   .tier-grid,
   .region-grid,
@@ -975,7 +779,6 @@ tbody tr:hover {
   .metrics,
   .account-insights,
   .account-controls,
-  .account-detail dl,
   .segment-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -992,11 +795,9 @@ tbody tr:hover {
 
 @media (max-width: 640px) {
   .masthead__actions,
-  .filter-summary,
   .metrics,
   .account-insights,
   .account-controls,
-  .account-detail dl,
   .segment-grid,
   .question-strip {
     grid-template-columns: 1fr;
