@@ -737,10 +737,95 @@ function capacitySegmentMatches(itemSegment, selectedSegment) {
   return itemSegment === selectedSegment;
 }
 
+function selectedAnalysisSegment() {
+  return state.segment === "All" ? null : state.segment;
+}
+
+function segmentRowsForGeo(geo) {
+  return data.segmentCapacity.filter((item) =>
+    item.geo === geo && capacitySegmentMatches(item.segment, state.segment)
+  );
+}
+
+function aggregateSegmentMetricsForGeo(geo) {
+  const rows = segmentRowsForGeo(geo);
+  return rows.reduce((acc, item) => {
+    acc.totalAccounts += Number(item.totalAccounts || 0);
+    acc.customers += Number(item.customers || 0);
+    acc.arr += Number(item.arr || 0);
+    acc.whitespace += Number(item.whitespace || 0);
+    acc.currentAds += Number(item.currentAds || 0);
+    acc.recommendedAds += Number(item.recommendedAds || 0);
+    return acc;
+  }, {
+    totalAccounts: 0,
+    customers: 0,
+    arr: 0,
+    whitespace: 0,
+    currentAds: 0,
+    recommendedAds: 0
+  });
+}
+
+function territoryMetrics(item) {
+  const segment = selectedAnalysisSegment();
+  if (!segment) {
+    return {
+      totalAccounts: Number(item.totalAccounts || 0),
+      customers: Number(item.customers || 0),
+      arr: Number(item.arr || 0),
+      whitespace: Number(item.incrementalAccounts || 0),
+      currentAds: Number(item.segmentAds?.["Large Enterprise"] || 0) + Number(item.segmentAds?.Enterprise || 0) + Number(item.segmentAds?.["Digital Natives"] || 0) + Number(item.segmentAds?.["Mid-Market"] || 0),
+      recommendedAds: Number(item.recommendedAds || 0)
+    };
+  }
+
+  const geoTotals = aggregateSegmentMetricsForGeo(item.geo);
+  const territoryCurrentAds = Number(item.segmentAds?.[segment] || 0);
+  const geoCurrentAds = Math.max(geoTotals.currentAds, 0);
+  const allocationShare = geoCurrentAds > 0 ? territoryCurrentAds / geoCurrentAds : 0;
+
+  return {
+    totalAccounts: geoTotals.totalAccounts * allocationShare,
+    customers: geoTotals.customers * allocationShare,
+    arr: geoTotals.arr * allocationShare,
+    whitespace: geoTotals.whitespace * allocationShare,
+    currentAds: territoryCurrentAds,
+    recommendedAds: geoTotals.recommendedAds * allocationShare
+  };
+}
+
 function currentAdsByGeo(geo) {
   return data.segmentCapacity
     .filter((item) => item.geo === geo)
     .reduce((sum, item) => sum + item.currentAds, 0);
+}
+
+function visibleGeoSummaries(territories) {
+  const byGeo = new Map();
+
+  territories.forEach((territory) => {
+    const metrics = territoryMetrics(territory);
+    const existing = byGeo.get(territory.geo) || {
+      geo: territory.geo,
+      totalAccounts: 0,
+      customers: 0,
+      arr: 0,
+      whitespace: 0,
+      currentAds: 0,
+      recommendedAds: 0
+    };
+
+    existing.totalAccounts += metrics.totalAccounts;
+    existing.customers += metrics.customers;
+    existing.arr += metrics.arr;
+    existing.whitespace += metrics.whitespace;
+    existing.currentAds += metrics.currentAds;
+    existing.recommendedAds += metrics.recommendedAds;
+    byGeo.set(territory.geo, existing);
+  });
+
+  return [...byGeo.values()];
 }
 
 function filteredAccounts() {
@@ -774,22 +859,24 @@ function filteredAccounts() {
 }
 
 function renderTerritories(items) {
-  const sorted = [...items].sort((a, b) => b.totalAccounts - a.totalAccounts);
-  const maxAccounts = Math.max(...sorted.map((item) => item.totalAccounts), 1);
-  const totalAccounts = sorted.reduce((sum, item) => sum + item.totalAccounts, 0);
-  const totalArr = sorted.reduce((sum, item) => sum + item.arr, 0);
+  const sorted = [...items].sort((a, b) => territoryMetrics(b).totalAccounts - territoryMetrics(a).totalAccounts);
+  const territoryRows = sorted.map((item) => ({ item, metrics: territoryMetrics(item) }));
+  const maxAccounts = Math.max(...territoryRows.map(({ metrics }) => metrics.totalAccounts), 1);
+  const totalAccounts = territoryRows.reduce((sum, { metrics }) => sum + metrics.totalAccounts, 0);
+  const totalArr = territoryRows.reduce((sum, { metrics }) => sum + metrics.arr, 0);
+  const totalWhitespace = territoryRows.reduce((sum, { metrics }) => sum + metrics.whitespace, 0);
 
   selectors.territoryCount.textContent = `${sorted.length} sub-regions`;
-  selectors.whitespaceTotal.textContent = `${formatDecimal(totalAccounts)} accounts · ${formatMoney(totalArr)} ARR`;
+  selectors.whitespaceTotal.textContent = `${formatDecimal(totalAccounts)} accounts · ${formatMoney(totalArr)} ARR · ${formatDecimal(totalWhitespace)} whitespace`;
 
-  selectors.territoryBars.innerHTML = sorted.map((item) => {
-    const width = Math.max(4, (item.totalAccounts / maxAccounts) * 100);
+  selectors.territoryBars.innerHTML = territoryRows.map(({ item, metrics }) => {
+    const width = Math.max(4, (metrics.totalAccounts / maxAccounts) * 100);
     return `
       <button class="bar-row" data-territory="${escapeAttr(item.territory)}" title="Filter to ${escapeAttr(item.territory)}">
         <span class="bar-row__label">${item.territory}</span>
         <span class="bar-row__track"><span class="bar-row__fill" style="width:${width}%"></span></span>
-        <span class="bar-row__value">${formatDecimal(item.totalAccounts)}</span>
-        <small>${formatDecimal(item.customers)} customers · ${formatMoney(item.arr)} ARR · ${formatDecimal(item.recommendedAds)} ADs</small>
+        <span class="bar-row__value">${formatDecimal(metrics.totalAccounts)}</span>
+        <small>${formatDecimal(metrics.customers)} customers · ${formatMoney(metrics.arr)} ARR · ${formatDecimal(metrics.whitespace)} whitespace · ${formatDecimal(metrics.currentAds)} / ${formatDecimal(metrics.recommendedAds)} ADs</small>
       </button>
     `;
   }).join("");
@@ -802,37 +889,37 @@ function renderTerritories(items) {
     });
   });
 
-  selectors.territoryTable.innerHTML = sorted.map((item) => `
+  selectors.territoryTable.innerHTML = territoryRows.map(({ item, metrics }) => `
     <tr>
       <td><strong>${item.territory}</strong></td>
       <td>${item.geo}</td>
       <td>${item.tier}</td>
-      <td>${formatDecimal(item.totalAccounts)}</td>
-      <td>${formatDecimal(item.customers)}</td>
-      <td>${formatDecimal(item.recommendedAds)}</td>
-      <td>${formatMoney(item.arr)}</td>
-      <td>${formatMoney(item.arr / item.recommendedAds)}</td>
-      <td>${formatDecimal(item.totalAccounts / item.recommendedAds, 1)}</td>
+      <td>${formatDecimal(metrics.totalAccounts)}</td>
+      <td>${formatDecimal(metrics.customers)}</td>
+      <td>${formatDecimal(metrics.recommendedAds)}</td>
+      <td>${formatMoney(metrics.arr)}</td>
+      <td>${formatMoney(metrics.arr / Math.max(metrics.recommendedAds, 1))}</td>
+      <td>${formatDecimal(metrics.totalAccounts / Math.max(metrics.recommendedAds, 1), 1)}</td>
     </tr>
   `).join("");
 }
 
-function renderGeos() {
-  const maxAccounts = Math.max(...data.geos.map((item) => item.totalAccounts), 1);
-  selectors.geoGrid.innerHTML = data.geos.map((item) => {
+function renderGeos(territories) {
+  const summaries = visibleGeoSummaries(territories);
+  const maxAccounts = Math.max(...summaries.map((item) => item.totalAccounts), 1);
+  selectors.geoGrid.innerHTML = summaries.map((item) => {
     const width = Math.max(4, (item.totalAccounts / maxAccounts) * 100);
-    const currentAds = currentAdsByGeo(item.geo);
-    const customersPerAd = item.customers / Math.max(currentAds, 1);
-    const accountsPerAd = item.totalAccounts / Math.max(currentAds, 1);
-    const arrPerAd = item.arr / Math.max(currentAds, 1);
+    const customersPerAd = item.customers / Math.max(item.currentAds, 1);
+    const accountsPerAd = item.totalAccounts / Math.max(item.currentAds, 1);
+    const arrPerAd = item.arr / Math.max(item.currentAds, 1);
     return `
       <button class="geo-tile" data-geo="${escapeAttr(item.geo)}">
         <div>
-          <span>${item.geo}</span>
-          <strong>${formatDecimal(currentAds)} / ${formatDecimal(item.recommendedAds)} ADs</strong>
+          <span>${item.geo}${selectedAnalysisSegment() ? ` · ${selectedAnalysisSegment()}` : ""}</span>
+          <strong>${formatDecimal(item.currentAds)} / ${formatDecimal(item.recommendedAds)} ADs</strong>
         </div>
         <div class="geo-tile__meter"><span style="width:${width}%"></span></div>
-        <p>${formatDecimal(item.totalAccounts)} accounts · ${formatDecimal(item.customers)} customers · ${formatMoney(item.arr)} ARR</p>
+        <p>${formatDecimal(item.totalAccounts)} accounts · ${formatDecimal(item.customers)} customers · ${formatMoney(item.arr)} ARR · ${formatDecimal(item.whitespace)} whitespace</p>
         <small>${formatDecimal(accountsPerAd, 1)} accounts / AD · ${formatDecimal(customersPerAd, 1)} customers / AD · ${formatMoney(arrPerAd)} ARR / AD</small>
       </button>
     `;
@@ -1045,7 +1132,7 @@ function render() {
   renderOrgSummary();
   renderMustWinDeck();
   renderTerritories(territories);
-  renderGeos();
+  renderGeos(territories);
   renderSegments(segments);
   renderAccounts(accounts);
   renderFilterChips();
